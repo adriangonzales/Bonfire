@@ -217,22 +217,27 @@ class Developer extends Admin_Controller
 		{
 			$this->load->library('form_validation');
 
-			$yes_no = lang('bf_no').','.lang('bf_yes');
-
-			$this->form_validation->set_rules('file_name', 'lang:db_filename', 'required|trim|max_length[220]|xss_clean');
-			$this->form_validation->set_rules('drop_tables', 'lang:db_drop_tables', 'required|trim|one_of['.$yes_no.']|xss_clean');
-			$this->form_validation->set_rules('add_inserts', 'lang:db_add_inserts', 'required|trim|one_of['.$yes_no.']|xss_clean');
-			$this->form_validation->set_rules('file_type', 'lang:db_compress_type', 'required|trim|one_of[txt,'.lang('db_gzip').','.lang('db_zip').']|xss_clean');
-			$this->form_validation->set_rules('tables', 'lang:db_tables', 'required|is_array|xss_clean');
+			$this->form_validation->set_rules('file_name', 'lang:db_filename', 'required|trim|max_length[220]');
+			$this->form_validation->set_rules('drop_tables', 'lang:db_drop_tables', 'required|trim|one_of[0,1]');
+			$this->form_validation->set_rules('add_inserts', 'lang:db_add_inserts', 'required|trim|one_of[0,1]');
+			$this->form_validation->set_rules('file_type', 'lang:db_compress_type', 'required|trim|one_of[txt,gzip,zip]');
+			$this->form_validation->set_rules('tables', 'lang:db_tables', 'required|is_array');
 
 			if ($this->form_validation->run() !== FALSE)
 			{
 				// Do the backup.
 				$this->load->dbutil();
 
-				$add_drop = ($_POST['drop_tables'] == 'Yes') ? TRUE : FALSE;
-				$add_insert = ($_POST['add_inserts'] == 'Yes') ? TRUE : FALSE;
-				$filename = $this->backup_folder . $_POST['file_name'] . '.' . $_POST['file_type'];
+				$add_drop = ($_POST['drop_tables'] == '1');
+				$add_insert = ($_POST['add_inserts'] == '1');
+
+				$extension = $_POST['file_type'];
+				if ($extension == 'gzip')
+				{
+					$extension = 'gz';
+				}
+				$basename = $_POST['file_name'] . '.' . $extension;
+				$filename = $this->backup_folder . $basename;
 
 				$prefs = array(
 								'tables' 		=> $_POST['tables'],
@@ -248,7 +253,7 @@ class Developer extends Admin_Controller
 
 				if (file_exists($filename))
 				{
-					Template::set_message('Backup file successfully saved. It can be found at <a href="/'. $filename .'">'. $filename .'</a>.', 'success');
+					Template::set_message('Backup file successfully saved. It can be found at <a href="'. html_escape(site_url(SITE_AREA . '/developer/database/get_backup/' .  $basename)) .'">'. html_escape($filename) .'</a>.', 'success');
 				}
 				else
 				{

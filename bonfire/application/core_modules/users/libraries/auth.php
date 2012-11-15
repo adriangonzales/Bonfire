@@ -181,7 +181,7 @@ class Auth
 		// check if the account has been soft deleted.
 		if ($user->deleted >= 1) // in case we go to a unix timestamp later, this will still work.
 		{
-			Template::set_message(sprintf(lang('us_account_deleted'), settings_item("site.system_email")), 'error');
+			Template::set_message(sprintf(lang('us_account_deleted'), html_escape(settings_item("site.system_email"))), 'error');
 			return FALSE;
 		}
 
@@ -322,7 +322,6 @@ class Auth
 		// If user isn't logged in, don't need to check permissions
 		if ($this->is_logged_in() === FALSE)
 		{
-			$this->logout();
 			Template::set_message($this->ci->lang->line('us_must_login'), 'error');
 			Template::redirect('login');
 		}
@@ -333,14 +332,19 @@ class Auth
 			// set message telling them no permission THEN redirect
 			Template::set_message( lang('us_no_permission'), 'attention');
 
-			if ($uri)
+			if (! $uri)
 			{
-				Template::redirect($uri);
+				$uri = $this->ci->session->userdata('previous_page');
+
+				// If previous page was the same (e.g. user pressed F5),
+				// but permission has been removed, then redirecting
+				// to it will cause an infinite loop.
+				if ($uri == current_url())
+				{
+					$uri = site_url();
+				}
 			}
-			else
-			{
-				Template::redirect($this->ci->session->userdata('previous_page'));
-			}
+			Template::redirect($uri);
 		}
 
 		return TRUE;
@@ -718,7 +722,7 @@ class Auth
 		}
 
 		// load random_string()
-		$this->load->helper('string');
+		$this->ci->load->helper('string');
 
 		// Generate a random string for our token
 		$token = random_string('alnum', 128);

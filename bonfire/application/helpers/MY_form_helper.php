@@ -243,6 +243,40 @@ if ( ! function_exists('form_number'))
 
 //--------------------------------------------------------------------
 
+if ( ! function_exists('form_range'))
+{
+	/**
+	 * Returns a properly templated range input field.
+	 *
+	 * NOTE: The $data value should be an array and should contain both
+	 * 'min' and 'max' values. If they are not present, then they will
+	 * default to 1 and 10, respectively.
+	 *
+	 * @param string $data    Either a string with the element name, or an array of key/value pairs of all attributes.
+	 * @param string $value   Either a string with the value, or blank if an array is passed to the $data param.
+	 * @param string $label   A string with the label of the element.
+	 * @param string $extra   A string with any additional items to include, like Javascript.
+	 * @param string $tooltip A string for inline help or a tooltip icon
+	 *
+	 * @return string A string with the formatted input element, label tag and wrapping divs.
+	 */
+	function form_range($data='', $value='', $label='', $extra='', $tooltip = '')
+	{
+		if (is_string($data))
+		{
+			$data = (array)$data;
+		}
+
+		$data['min'] = isset($opts['min']) ? $opts['min'] : 1;
+		$data['max'] = isset($opts['max']) ? $opts['max'] : 10;
+
+		return _form_common('range', $data, $value, $label, $extra, $tooltip);
+
+	}//end form_color()
+}
+
+//--------------------------------------------------------------------
+
 if ( ! function_exists('form_color'))
 {
 	/**
@@ -309,10 +343,10 @@ if ( ! function_exists('form_date'))
 
 //--------------------------------------------------------------------
 
-if ( ! function_exists('form_textarea'))
+if ( ! function_exists('form_datetime'))
 {
 	/**
-	 * Returns a properly templated textarea field.
+	 * Returns a properly templated date input field.
 	 *
 	 * @param string $data    Either a string with the element name, or an array of key/value pairs of all attributes.
 	 * @param string $value   Either a string with the value, or blank if an array is passed to the $data param.
@@ -322,59 +356,33 @@ if ( ! function_exists('form_textarea'))
 	 *
 	 * @return string A string with the formatted input element, label tag and wrapping divs.
 	 */
-	function form_textarea($data='', $value='', $label='', $extra='', $tooltip = '')
+	function form_datetime($data='', $value='', $label='', $extra='', $tooltip = '')
 	{
-		$defaults = array('name' => (( ! is_array($data)) ? $data : ''));
+		return _form_common('datetime', $data, $value, $label, $extra, $tooltip);
 
-		// If name is empty at this point, try to grab it from the $data array
-		if (empty($defaults['name']) && is_array($data) && isset($data['name']))
-		{
-			$defaults['name'] = $data['name'];
-			unset($data['name']);
-		}
+	}//end form_date()
+}
 
-		if ( ! is_array($data) OR ! isset($data['value']))
-		{
-			$val = $value;
-		}
-		else
-		{
-			$val = $data['value'];
-			unset($data['value']); // textareas don't use the value attribute
-		}
+//--------------------------------------------------------------------
 
-		$output = _parse_form_attributes($data, $defaults);
+if ( ! function_exists('form_month'))
+{
+	/**
+	 * Returns a properly templated month input field.
+	 *
+	 * @param string $data    Either a string with the element name, or an array of key/value pairs of all attributes.
+	 * @param string $value   Either a string with the value, or blank if an array is passed to the $data param.
+	 * @param string $label   A string with the label of the element.
+	 * @param string $extra   A string with any additional items to include, like Javascript.
+	 * @param string $tooltip A string for inline help or a tooltip icon
+	 *
+	 * @return string A string with the formatted input element, label tag and wrapping divs.
+	 */
+	function form_month($data='', $value='', $label='', $extra='', $tooltip = '')
+	{
+		return _form_common('month', $data, $value, $label, $extra, $tooltip);
 
-		$error = '';
-
-		if (function_exists('form_error'))
-		{
-			if (form_error($defaults['name']))
-			{
-				$error   = ' error';
-				$tooltip = '<span class="help-inline">' . form_error($defaults['name']) . '</span>' . PHP_EOL;
-			}
-		}
-
-		$name = $defaults['name'];
-
-		$val = form_prep($val, $name);
-
-		$output = <<<EOL
-
-<div class="control-group {$error}">
-	<label class="control-label" for="{$name}">{$label}</label>
-	<div class="controls">
-		 <textarea {$output} {$extra}>{$val}</textarea>
-		{$tooltip}
-	</div>
-</div>
-
-EOL;
-
-		return $output;
-
-	}//end form_textarea()
+	}//end form_date()
 }
 
 //--------------------------------------------------------------------

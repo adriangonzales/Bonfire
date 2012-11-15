@@ -67,17 +67,17 @@ class Install extends CI_Controller {
 		sure they can be written to.
 	*/
 	private $writeable_folders = array(
-		'/bonfire/application/cache',
-		'/bonfire/application/logs',
-		'/bonfire/application/config',
-		'/bonfire/application/config/development',
-		'/bonfire/application/config/testing',
-		'/bonfire/application/config/production',
-		'/bonfire/application/archives',
-		'/bonfire/application/archives/config',
-		'/bonfire/application/db/backups',
-		'/bonfire/application/db/migrations',
-		'/assets/cache'
+		'bonfire/application/cache',
+		'bonfire/application/logs',
+		'bonfire/application/config',
+		'bonfire/application/config/development',
+		'bonfire/application/config/testing',
+		'bonfire/application/config/production',
+		'bonfire/application/archives',
+		'bonfire/application/archives/config',
+		'bonfire/application/db/backups',
+		'bonfire/application/db/migrations',
+		'assets/cache'
 	);
 
 	/*
@@ -86,7 +86,7 @@ class Install extends CI_Controller {
 		installation.
 	*/
 	private $reverse_writeable_folders = array(
-		'/bonfire/application/config',
+		'bonfire/application/config',
 	);
 
 	/*
@@ -95,8 +95,8 @@ class Install extends CI_Controller {
 		sure they can be written to.
 	*/
 	private $writeable_files = array(
-		'/bonfire/application/config/application.php',
-		'/bonfire/application/config/database.php',
+		'bonfire/application/config/application.php',
+		'bonfire/application/config/database.php',
 	);
 
 	private $vdata = array();
@@ -135,11 +135,11 @@ class Install extends CI_Controller {
 			$this->load->library('form_validation');
 			$this->form_validation->set_error_delimiters('', '');
 			//$this->form_validation->CI =& $this;
-			$this->form_validation->set_rules('environment', lang('in_environment'), 'required|trim|strip_tags|xss_clean');
-			$this->form_validation->set_rules('hostname', lang('in_host'), 'required|trim|strip_tags|xss_clean');
-			$this->form_validation->set_rules('username', lang('bf_username'), 'required|trim|strip_tags|xss_clean');
-			$this->form_validation->set_rules('database', lang('in_database'), 'required|trim|strip_tags|xss_clean');
-			$this->form_validation->set_rules('db_prefix', lang('in_prefix'), 'trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('environment', lang('in_environment'), 'required|trim|xss_clean');
+			$this->form_validation->set_rules('hostname', lang('in_host'), 'required|trim|xss_clean');
+			$this->form_validation->set_rules('username', lang('bf_username'), 'required|trim|xss_clean');
+			$this->form_validation->set_rules('database', lang('in_database'), 'required|trim|xss_clean');
+			$this->form_validation->set_rules('db_prefix', lang('in_prefix'), 'trim|xss_clean');
 	
 			$this->startup_check();
 	
@@ -218,11 +218,11 @@ class Install extends CI_Controller {
 			$this->form_validation->set_error_delimiters('', '');
 			//$this->form_validation->CI =& $this;
 
-			$this->form_validation->set_rules('site_title', lang('in_site_title'), 'required|trim|strip_tags|min_length[1]|xss_clean');
-			$this->form_validation->set_rules('username', lang('in_username'), 'required|trim|strip_tags|xss_clean');
-			$this->form_validation->set_rules('password', lang('in_password'), 'required|trim|strip_tags|alpha_dash|min_length[8]|xss_clean');
+			$this->form_validation->set_rules('site_title', lang('in_site_title'), 'required|trim|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('username', lang('in_username'), 'required|trim|xss_clean');
+			$this->form_validation->set_rules('password', lang('in_password'), 'required|trim|alpha_dash|min_length[8]|xss_clean');
 			$this->form_validation->set_rules('pass_confirm', lang('in_password_again'), 'required|trim|matches[password]');
-			$this->form_validation->set_rules('email', lang('in_email'), 'required|trim|strip_tags|valid_email|xss_clean');
+			$this->form_validation->set_rules('email', lang('in_email'), 'required|trim|valid_email|xss_clean');
 
 			if ($this->form_validation->run() !== false)
 			{
@@ -351,7 +351,7 @@ class Install extends CI_Controller {
 		// Check Folders
 		foreach ($this->writeable_folders as $folder)
 		{
-			$full_folder = FCPATH . '..' . $folder;
+			$full_folder = FCPATH . '../' . $folder;
 
 			@chmod($full_folder, 0777);
 			if (!is_dir($full_folder) || !is_writeable($full_folder))
@@ -368,8 +368,8 @@ class Install extends CI_Controller {
 		// Check files
 		foreach ($this->writeable_files as $file)
 		{
-			@chmod(FCPATH . '..' . $file, 0666);
-			if (!is_writeable(FCPATH . '..' . $file))
+			@chmod(FCPATH . '../' . $file, 0666);
+			if (!is_writeable(FCPATH . '../' . $file))
 			{
 				$file_errors .= "<li>$file</li>";
 			}
@@ -526,7 +526,7 @@ class Install extends CI_Controller {
 		// Reverse Folders
 		foreach ($this->reverse_writeable_folders as $folder)
 		{
-			@chmod(FCPATH . '..' . $folder, 0775);
+			@chmod(FCPATH . '../' . $folder, 0775);
 		}
 
 		// We made it to the end, so we're good to go!
