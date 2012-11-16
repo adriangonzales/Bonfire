@@ -162,6 +162,7 @@ class Settings extends Admin_Controller
 		$this->pager['total_rows'] = $total_users;
 		$this->pager['per_page'] = $this->limit;
 		$this->pager['uri_segment']	= 5;
+		$this->pager['suffix'] = is_array($this->input->get()) ? '?'.http_build_query($this->input->get(), '', "&") : "";
 
 		$this->pagination->initialize($this->pager);
 
